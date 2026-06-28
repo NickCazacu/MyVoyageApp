@@ -1,0 +1,24 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# --- Сборка модулей (app/build и т.п.) ---
+build/
+
+# --- СЕКРЕТЫ: НИКОГДА не коммитить в публичный репозиторий ---
+# Ключ подписи и его пароли — потеря/утечка = невозможность безопасных обновлений.
+keystore.properties
+*.jks
+*.keystore

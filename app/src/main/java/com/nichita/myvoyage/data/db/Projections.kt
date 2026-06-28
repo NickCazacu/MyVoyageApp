@@ -1,0 +1,27 @@
+package com.nichita.myvoyage.data.db
+
+import com.nichita.myvoyage.data.model.Category
+import com.nichita.myvoyage.data.model.Currency
+
+/** Сумма расходов по одной категории (результат GROUP BY в DAO). */
+data class CategorySum(
+    val category: Category,
+    val total: Double
+)
+
+/**
+ * Сумма расходов по категории в разрезе валюты рейса.
+ * Нужна для сводной статистики по всем рейсам: валюты не складываются,
+ * поэтому разбивка считается отдельно для каждой валюты.
+ */
+data class CurrencyCategorySum(
+    val currency: Currency,
+    val category: Category,
+    val total: Double
+)
+
+/** Итоговая сумма по рейсу (для сравнения рейсов между собой). */
+data class TripTotal(
+    val tripId: Long,
+    val total: Double
+)

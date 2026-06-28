@@ -1,0 +1,76 @@
+package com.nichita.myvoyage.data.db
+
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+
+/**
+ * Миграции схемы Room. Каждая переносит данные пользователя без потерь —
+ * в отличие от разрушающего fallback, который обнулял БД при обновлении.
+ *
+ * Применяемый приём «create → copy → drop → rename» портативен и работает на
+ * всех версиях SQLite (в т.ч. на старых Android с minSdk 24, где нет
+ * `ALTER TABLE DROP COLUMN`). Во время миграции Room держит внешние ключи
+ * выключенными (PRAGMA foreign_keys включается уже после, в onOpen), поэтому
+ * пересоздание родительской таблицы `trips` не вызывает каскадного удаления
+ * дочерних строк.
+ */
+
+/**
+ * v1 → v2:
+ *  - `trips`: удалена колонка `budget` (бюджет рейса больше не хранится).
+ *  - `fuel_entries`: вместо `liters` + `pricePerLiter` + `odometer` — одна
+ *    колонка `cost`; стоимость заправки переносится как `liters * pricePerLiter`.
+ *    Индекс по `odometer` удалён (колонки больше нет).
+ */
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // --- trips: убираем колонку budget ---
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `trips_new` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `destination` TEXT NOT NULL,
+                `startDate` INTEGER NOT NULL,
+                `endDate` INTEGER,
+                `currency` TEXT NOT NULL
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            INSERT INTO `trips_new` (`id`, `destination`, `startDate`, `endDate`, `currency`)
+            SELECT `id`, `destination`, `startDate`, `endDate`, `currency` FROM `trips`
+            """.trimIndent()
+        )
+        db.execSQL("DROP TABLE `trips`")
+        db.execSQL("ALTER TABLE `trips_new` RENAME TO `trips`")
+
+        // --- fuel_entries: liters+pricePerLiter+odometer -> cost ---
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `fuel_entries_new` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `tripId` INTEGER NOT NULL,
+                `date` INTEGER NOT NULL,
+                `cost` REAL NOT NULL,
+                `fuelType` TEXT NOT NULL,
+                FOREIGN KEY(`tripId`) REFERENCES `trips`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            INSERT INTO `fuel_entries_new` (`id`, `tripId`, `date`, `cost`, `fuelType`)
+            SELECT `id`, `tripId`, `date`, `liters` * `pricePerLiter`, `fuelType` FROM `fuel_entries`
+            """.trimIndent()
+        )
+        db.execSQL("DROP TABLE `fuel_entries`")
+        db.execSQL("ALTER TABLE `fuel_entries_new` RENAME TO `fuel_entries`")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_fuel_entries_tripId` ON `fuel_entries` (`tripId`)"
+        )
+    }
+}
+
+/** Все миграции приложения — передаются в RoomDatabase.Builder. */
+val ALL_MIGRATIONS: Array<Migration> = arrayOf(MIGRATION_1_2)

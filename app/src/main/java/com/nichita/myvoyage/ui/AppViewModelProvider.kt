@@ -1,0 +1,15 @@
+package com.nichita.myvoyage.ui
+
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.nichita.myvoyage.MyVoyageApp
+import com.nichita.myvoyage.data.repository.VoyageRepository
+
+/**
+ * Достаёт репозиторий из Application внутри фабрик ViewModel.
+ * Используется в `viewModelFactory { initializer { ... } }` на экранах.
+ */
+fun CreationExtras.voyageRepository(): VoyageRepository {
+    val app = this[APPLICATION_KEY] as MyVoyageApp
+    return app.repository
+}

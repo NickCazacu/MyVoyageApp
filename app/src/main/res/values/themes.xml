@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyVoyage" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Фон окна до отрисовки Compose — винный, чтобы не было белой вспышки -->
+        <item name="android:windowBackground">@color/wine_splash</item>
+        <!-- Экран запуска (Android 12+): винный фон под иконкой вместо белого -->
+        <item name="android:windowSplashScreenBackground">@color/wine_splash</item>
+    </style>
+</resources>

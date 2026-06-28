@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Передний план адаптивной иконки: минималистичный компас в перивинкловых тонах
+  (перекликается с иконкой «Explore» внутри приложения). Кольцо — упрощённый
+  контур, гранёная стрелка-игла повёрнута, как будто указывает курс (тема рейсов).
+  Вся графика — в центральной «безопасной зоне» (≈ радиус 33 от центра 54,54).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Кольцо компаса -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#D3DAED"
+        android:strokeWidth="3.4"
+        android:pathData="M28,54 a26,26 0 1,1 52,0 a26,26 0 1,1 -52,0" />
+
+    <!-- Стрелка-игла: гранёный ромб, повёрнут как «курс» -->
+    <group
+        android:name="needle"
+        android:pivotX="54"
+        android:pivotY="54"
+        android:rotation="-28">
+        <!-- правая грань — светлая -->
+        <path
+            android:fillColor="#E3E7F4"
+            android:pathData="M54,32 L60.5,54 L54,76 Z" />
+        <!-- левая грань — приглушённая (объём) -->
+        <path
+            android:fillColor="#A6AFCB"
+            android:pathData="M54,32 L47.5,54 L54,76 Z" />
+    </group>
+
+    <!-- Центральная втулка -->
+    <path
+        android:fillColor="#3A0A1E"
+        android:pathData="M54,49.5 a4.5,4.5 0 1,1 0,9 a4.5,4.5 0 1,1 0,-9 z" />
+    <path
+        android:fillColor="#E3E7F4"
+        android:pathData="M54,51.5 a2.5,2.5 0 1,1 0,5 a2.5,2.5 0 1,1 0,-5 z" />
+
+    <!-- Маленькая метка севера на кольце -->
+    <path
+        android:fillColor="#E3E7F4"
+        android:pathData="M54,25.4 a2.4,2.4 0 1,1 0,4.8 a2.4,2.4 0 1,1 0,-4.8 z" />
+</vector>
